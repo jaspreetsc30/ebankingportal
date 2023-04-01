@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class MonthlyTransactionsResponse {
     HashMap<String, Double> balances;
+    HashMap<String, String> exchangeRates;
     List<Transaction> transactions;
     String message;
 }

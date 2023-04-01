@@ -1,5 +1,7 @@
 package com.example.ebankingportal.models.transaction;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Transaction implements JSONSerdeCompatible {
+@JsonDeserialize(as = Transaction.class)
+@JsonSerialize(as = Transaction.class)
+public class Transaction  {
 
 
     private String transactionId;

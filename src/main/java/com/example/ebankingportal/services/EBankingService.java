@@ -1,6 +1,8 @@
 package com.example.ebankingportal.services;
 
 import com.example.ebankingportal.models.transaction.Transaction;
+import com.example.ebankingportal.services.exchangerateservice.ExchangeRateService;
+import com.example.ebankingportal.util.BalanceCalculator;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +16,7 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -24,17 +25,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class EBankingService {
 
-    @Value("${kafka.inputtopic}")
+    @Value("${kafka.transactionsstorename}")
+    String transactionsStoreName;
+
+    @Value("${kafka.balancesstorename}")
+    String balancesStoreName;
+
+    @Value("${kafka.topics.input}")
     private String topic;
     @Autowired
     private KafkaTemplate<String, Transaction> kafkaTemplate;
     @Autowired
     StreamsBuilderFactoryBean factoryBean;
+    @Autowired
+    ExchangeRateService exchangeRateService;
 
     private HashMap<String, Double> getBalance(String IBAN){
         KafkaStreams kafkaStreams = factoryBean.getKafkaStreams();
         ReadOnlyKeyValueStore<String, HashMap<String,Double>> balance = kafkaStreams.store(
-                StoreQueryParameters.fromNameAndType("balances", QueryableStoreTypes.keyValueStore())
+                StoreQueryParameters.fromNameAndType(balancesStoreName, QueryableStoreTypes.keyValueStore())
         );
         HashMap<String,Double> userBalance = balance.get(IBAN);
         return balance.get(IBAN);
@@ -46,7 +55,7 @@ public class EBankingService {
         return new Double(String.valueOf(userBalance.get(currency)));
     }
 
-    private MonthlyTransactionsResponse paginateTransactions(List<Transaction> transactions , int page, int pagesize){
+    private MonthlyTransactionsResponse paginateTransactions(List<Transaction> transactions , int page, int pagesize, boolean exchangeRateFlag){
         MonthlyTransactionsResponse response = new MonthlyTransactionsResponse();
         HashMap<String,Double> balances = new HashMap<>();
         int numTransactions = transactions.size();
@@ -67,17 +76,15 @@ public class EBankingService {
         System.out.println(transactions);
 
         for (Transaction transaction: response.getTransactions()) {
-            String currency = transaction.getCurrency();
-            BigDecimal amount = new BigDecimal(transaction.getAmount());
-            if (!balances.containsKey(currency))
-                balances.put(currency,amount.doubleValue());
-            else {
-                BigDecimal currentBalance = new BigDecimal(String.valueOf(balances.get(currency))).add(new BigDecimal(String.valueOf(amount))) ;
-                balances.put(currency,currentBalance.doubleValue());
-            }
-
+             balances=BalanceCalculator.calculateBalances(balances,transaction);
         }
         response.setBalances(balances);
+        if (exchangeRateFlag){
+            HashMap<String,String> exchangeRates =exchangeRateService.getExchangeRates(new ArrayList<>(balances.keySet()));
+            response.setExchangeRates(exchangeRates);;
+        }
+
+
         return response;
 
     }
@@ -116,12 +123,12 @@ public class EBankingService {
 
     }
 
-    public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize){
+    public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize, boolean exchangeRateFlag){
         KafkaStreams kafkaStreams = factoryBean.getKafkaStreams();
         ReadOnlyKeyValueStore<String, List<Transaction>> transactions = kafkaStreams.store(
-                StoreQueryParameters.fromNameAndType("transactionsbyuser", QueryableStoreTypes.keyValueStore())
+                StoreQueryParameters.fromNameAndType(transactionsStoreName, QueryableStoreTypes.keyValueStore())
         );
-            return paginateTransactions(transactions.get(key),page,pageSize);
+            return paginateTransactions(transactions.get(key),page,pageSize,exchangeRateFlag);
     }
 
 

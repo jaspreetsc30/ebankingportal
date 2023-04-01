@@ -33,8 +33,7 @@ public class EBankingController {
     StreamsBuilderFactoryBean factoryBean;
     @Autowired
     JwtService jwtService;
-    @Autowired
-    private KafkaTemplate<String, List<Transaction>> kafkaTemplate2;
+
     @Autowired
     private EBankingService eBankingService;
 
@@ -45,6 +44,7 @@ public class EBankingController {
         Claims claim = jwtService.extractAllClaims(jwtToken);
         return iban.equals(claim.get("IBAN"));
     }
+
 
 
 
@@ -66,7 +66,10 @@ public class EBankingController {
             ,@Range(min = 1,max = 12) @RequestParam(required = true) int month
             ,@RequestParam(required = true) int year
             ,@Range(min = 1,max = 12) @RequestParam(required = false) Integer page
-            ,@RequestParam(required = false) Integer pageSize){
+            ,@RequestParam(required = false) Integer pageSize
+            ,@RequestParam(required = false) Boolean exchangeRateFlag
+
+    ){
 
         if (!isIBANValid(headers,iban)) throw new SecurityException("Invalid IBAN");
         long currYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -74,32 +77,9 @@ public class EBankingController {
         String key = Integer.toString(month)+ Integer.toString(year)+ "_" + iban;
         if (page == null) page = 1;
         if (pageSize == null) pageSize = 10;
-        MonthlyTransactionsResponse response = eBankingService.getMonthlyTransactions(key,page,pageSize);
+        if (exchangeRateFlag == null) exchangeRateFlag = false;
+        MonthlyTransactionsResponse response = eBankingService.getMonthlyTransactions(key,page,pageSize,exchangeRateFlag);
         return response;
-    }
-
-    @GetMapping("/test")
-    private void check(@Valid @RequestBody CreditDebitRequest request){
-        String transactionId = UUID.randomUUID().toString();
-        String IBAN = request.getIban();
-        Transaction transaction = Transaction.builder()
-                .transactionId(transactionId)
-                .IBAN(IBAN)
-                .currency(String.valueOf(request.getCurrency()))
-                .amount(request.getAmount())
-                .timestamp(System.currentTimeMillis() )
-                .message(request.getMessage())
-                .build();
-        List<Transaction> list = new ArrayList<>();
-        list.add(transaction);
-        kafkaTemplate2.send("test", list);
-    }
-
-    @KafkaListener(topics ="test" , groupId = "1")
-    public void process(ArrayList<Transaction> transactions){
-
-        System.out.println(transactions);
-        System.out.println(transactions.get(0));
     }
 
 

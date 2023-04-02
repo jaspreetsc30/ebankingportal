@@ -6,8 +6,8 @@ import com.example.ebankingportal.configurations.kafka.StreamProcessor;
 import com.example.ebankingportal.models.transaction.Transaction;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.*;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +23,6 @@ import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CON
 import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class TopologyTest {
 
@@ -34,14 +33,32 @@ public class TopologyTest {
 
     @Value("${kafka.topics.output.balance}")
     String balancesOutputTopic;
+
     @Autowired
     private StreamProcessor streamProcessor;
 
+    private List<Transaction> transactions ;
+
     @BeforeEach
     void setUp() {
-        System.out.println("this is invoked");
-        streamProcessor = new StreamProcessor();
-
+        transactions = new ArrayList<>();
+        Long timestamp = System.currentTimeMillis();
+        transactions.add(
+                new Transaction(
+                        "3c04fcce-65fa-4115-9441-2781f6706ca7",
+                        "test",
+                        200.0,
+                        "HKD",
+                        timestamp,
+                        "Online payment CHF"));
+        transactions.add(
+                new Transaction(
+                        "3c04fcce-65fa-4115-9441-2781f6706cb7",
+                        "test",
+                        -100.0,
+                        "HKD",
+                        timestamp,
+                        "Online payment HKD"));
     }
 
     @Test
@@ -65,24 +82,6 @@ public class TopologyTest {
                             transactionsOutputTopic,
                             new StringDeserializer(),
                             new Serdes.ListSerde<>(ArrayList.class , new JsonSerde<>(Transaction.class)).deserializer());;
-            List<Transaction> transactions = new ArrayList<>();
-            Long timestamp = System.currentTimeMillis();
-            transactions.add(
-                    new Transaction(
-                            "3c04fcce-65fa-4115-9441-2781f6706ca7",
-                            "test",
-                            200.0,
-                            "HKD",
-                            timestamp,
-                            "Online payment HKD"));
-            transactions.add(
-                    new Transaction(
-                            "3c04fcce-65fa-4115-9441-2781f6706cb7",
-                            "test",
-                            -100.0,
-                            "HKD",
-                            timestamp,
-                            "Online payment CHF"));
 
             transactions.forEach(tr -> inputTopic.pipeInput(tr.getIBAN(), tr));
 
@@ -115,24 +114,6 @@ public class TopologyTest {
                             balancesOutputTopic,
                             new StringDeserializer(),
                             new StringDeserializer());;
-            List<Transaction> transactions = new ArrayList<>();
-            Long timestamp = System.currentTimeMillis();
-            transactions.add(
-                    new Transaction(
-                            "3c04fcce-65fa-4115-9441-2781f6706ca7",
-                            "test",
-                            200.0,
-                            "HKD",
-                            timestamp,
-                            "Online payment CHF"));
-            transactions.add(
-                    new Transaction(
-                            "3c04fcce-65fa-4115-9441-2781f6706cb7",
-                            "test",
-                            -100.0,
-                            "HKD",
-                            timestamp,
-                            "Online payment HKD"));
 
             transactions.forEach(tr -> inputTopic.pipeInput(tr.getIBAN(), tr));
 

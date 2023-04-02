@@ -2,7 +2,7 @@ package com.example.ebankingportal;
 
 import com.example.ebankingportal.models.transaction.Transaction;
 import com.example.ebankingportal.util.BalanceCalculator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;

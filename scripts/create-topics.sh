@@ -7,4 +7,16 @@ kafka-topics \
   --bootstrap-server kafka:9092 \
   --topic bank-transactions \
   --replication-factor 1 \
-  --create
+  --create --if-not-exists
+
+kafka-topics \
+  --bootstrap-server kafka:9092 \
+  --topic monthly-bank-transactions-aggregates \
+  --replication-factor 1 \
+  --create --if-not-exists
+
+kafka-topics \
+  --bootstrap-server kafka:9092 \
+  --topic bank-balances \
+  --replication-factor 1 \
+  --create --if-not-exists

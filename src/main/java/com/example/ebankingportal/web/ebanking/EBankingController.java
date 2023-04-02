@@ -3,6 +3,7 @@ package com.example.ebankingportal.web.ebanking;
 import com.example.ebankingportal.service.EBankingService;
 import com.example.ebankingportal.service.JwtService;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
+import com.example.ebankingportal.web.ebanking.domain.CreditDebitResponse;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -39,13 +40,13 @@ public class EBankingController {
 
 
     @PostMapping("/debit")
-    private String debit(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreditDebitRequest request){
+    private CreditDebitResponse debit(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreditDebitRequest request){
         if (!isIBANValid(headers, request.getIban())) throw new SecurityException("Invalid IBAN");
         return eBankingService.processDebit(request);
     }
 
     @PostMapping("/credit")
-    private String credit(@RequestHeader HttpHeaders headers,@Valid @RequestBody CreditDebitRequest request){
+    private CreditDebitResponse credit(@RequestHeader HttpHeaders headers,@Valid @RequestBody CreditDebitRequest request){
         if (!isIBANValid(headers, request.getIban())) throw new SecurityException("Invalid IBAN");
         return eBankingService.processCredit(request);
     }

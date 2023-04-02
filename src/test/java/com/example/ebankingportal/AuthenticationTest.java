@@ -39,9 +39,5 @@ public class AuthenticationTest {
         assertEquals(jwtService.extractUsername(jwt), user.getUsername());
         assertTrue(claims.containsKey("IBAN") && claims.get("IBAN") == user.getIBAN());
     }
-//    @Test
-//    public void unauthenticatedUsersCannotAccessEndpoints() throws Exception {
-//        mvc.perform(MockMvcRequestBuilders.get("/api/v1/banking/inquire/123")).andExpect(status().isForbidden());
-//    }
 
 }

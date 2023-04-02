@@ -50,27 +50,6 @@ public class KafkaConfig {
         return new KafkaStreamsConfiguration(props);
     }
 
-//    @Bean
-//    public KafkaAdmin kafkaAdmin() {
-//        Map<String, Object> configs = new HashMap<>();
-//        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-//        return new KafkaAdmin(configs);
-//    }
-//
-//    @Bean
-//    public NewTopic createInputTopic() {
-//        return new NewTopic(inputTopic, 1, (short) 1);
-//    }
-//
-//    @Bean
-//    public NewTopic createTransactionsOutputTopic() {
-//        return new NewTopic(transactionsOutputTopic, 1, (short) 1);
-//    }
-//
-//    @Bean
-//    public NewTopic createBalancesOutputTopic() {
-//        return new NewTopic(balancesOutputTopic, 1, (short) 1);
-//    }
     @Bean
     public ProducerFactory<String, Transaction> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();

@@ -4,7 +4,9 @@ import com.example.ebankingportal.model.Transaction;
 import com.example.ebankingportal.service.exchangerateservice.ExchangeRateService;
 import com.example.ebankingportal.util.CalculatorUtil;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
+import com.example.ebankingportal.web.ebanking.domain.CreditDebitResponse;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
+import com.example.ebankingportal.web.ebanking.domain.TransactionType;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -89,25 +91,39 @@ public class EBankingService {
 
     }
 
-    public String processDebit(CreditDebitRequest request){
+    private CreditDebitResponse generateCreditDebitResponse(CreditDebitRequest request, String transactionId, Long timestamp, TransactionType transactionType){
+        return CreditDebitResponse.builder()
+                .iban(request.getIban())
+                .amount(request.getAmount())
+                .currency(request.getCurrency())
+                .message(request.getMessage())
+                .transactionId(transactionId)
+                .time(timestamp)
+                .transactionType(transactionType)
+                .build();
+    }
+
+    public CreditDebitResponse processDebit(CreditDebitRequest request){
         String transactionId = UUID.randomUUID().toString();
         String IBAN = request.getIban();
+        Long timestamp = System.currentTimeMillis();
         Transaction transaction = Transaction.builder()
                 .transactionId(transactionId)
                 .IBAN(IBAN)
                 .currency(String.valueOf(request.getCurrency()))
                 .amount(request.getAmount())
-                .timestamp(System.currentTimeMillis() )
+                .timestamp(timestamp )
                 .message(request.getMessage())
                 .build();
         kafkaTemplate.send(topic,IBAN,transaction);
-        return transactionId;
+        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT);
     }
 
-    public String processCredit(CreditDebitRequest request){
+    public CreditDebitResponse processCredit(CreditDebitRequest request){
         String IBAN = request.getIban();
         String currency = String.valueOf(request.getCurrency());
         Double amount = request.getAmount();
+        Long timestamp = System.currentTimeMillis();
         if (Double.compare(getBalance(IBAN,currency),amount) != 1){ throw new RuntimeException("Not enough debit for the given currency");}
         String transactionId = UUID.randomUUID().toString();
         Transaction transaction = Transaction.builder()
@@ -115,11 +131,11 @@ public class EBankingService {
                 .IBAN(IBAN)
                 .currency(currency)
                 .amount(-amount)
-                .timestamp(System.currentTimeMillis() )
+                .timestamp(timestamp )
                 .message(request.getMessage())
                 .build();
         kafkaTemplate.send(topic,IBAN,transaction);
-        return transactionId;
+        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT);
 
     }
 

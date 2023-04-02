@@ -1,8 +1,8 @@
-package com.example.ebankingportal.configurations.authentication;
+package com.example.ebankingportal.config.authentication;
 
 
-import com.example.ebankingportal.models.User;
-import com.example.ebankingportal.repositories.UserRepository;
+import com.example.ebankingportal.model.User;
+import com.example.ebankingportal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

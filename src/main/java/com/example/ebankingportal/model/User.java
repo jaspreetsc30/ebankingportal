@@ -1,4 +1,4 @@
-package com.example.ebankingportal.models;
+package com.example.ebankingportal.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

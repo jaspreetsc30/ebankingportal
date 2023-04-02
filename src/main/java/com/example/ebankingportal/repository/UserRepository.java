@@ -1,6 +1,6 @@
-package com.example.ebankingportal.repositories;
+package com.example.ebankingportal.repository;
 
-import com.example.ebankingportal.models.User;
+import com.example.ebankingportal.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User,Long> {

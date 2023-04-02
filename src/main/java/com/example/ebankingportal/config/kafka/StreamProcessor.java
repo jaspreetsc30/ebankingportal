@@ -1,9 +1,8 @@
-package com.example.ebankingportal.configurations.kafka;
+package com.example.ebankingportal.config.kafka;
 
 
-import com.example.ebankingportal.models.transaction.Transaction;
-import com.example.ebankingportal.util.BalanceCalculator;
-import lombok.AllArgsConstructor;
+import com.example.ebankingportal.model.Transaction;
+import com.example.ebankingportal.util.CalculatorUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Serde;
@@ -59,7 +58,7 @@ public class StreamProcessor {
                         key)
                 .aggregate(
                         HashMap<String,Double>::new,
-                        (key, value, aggregate) -> BalanceCalculator.calculateBalances(aggregate,value),
+                        (key, value, aggregate) -> CalculatorUtil.calculateBalances(aggregate,value),
 
 
                         Materialized.<String, HashMap<String,Double>, KeyValueStore<Bytes, byte[]>>as(balancesstorename)

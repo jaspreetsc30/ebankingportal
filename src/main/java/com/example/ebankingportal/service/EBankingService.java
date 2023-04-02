@@ -1,8 +1,8 @@
-package com.example.ebankingportal.services;
+package com.example.ebankingportal.service;
 
-import com.example.ebankingportal.models.transaction.Transaction;
-import com.example.ebankingportal.services.exchangerateservice.ExchangeRateService;
-import com.example.ebankingportal.util.BalanceCalculator;
+import com.example.ebankingportal.model.Transaction;
+import com.example.ebankingportal.service.exchangerateservice.ExchangeRateService;
+import com.example.ebankingportal.util.CalculatorUtil;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +76,7 @@ public class EBankingService {
         System.out.println(transactions);
 
         for (Transaction transaction: response.getTransactions()) {
-             balances=BalanceCalculator.calculateBalances(balances,transaction);
+             balances= CalculatorUtil.calculateBalances(balances,transaction);
         }
         response.setBalances(balances);
         if (exchangeRateFlag){

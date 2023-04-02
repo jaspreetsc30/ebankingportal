@@ -1,28 +1,18 @@
 package com.example.ebankingportal.web.ebanking;
 
-import com.example.ebankingportal.models.transaction.Transaction;
-import com.example.ebankingportal.services.EBankingService;
-import com.example.ebankingportal.services.JwtService;
+import com.example.ebankingportal.service.EBankingService;
+import com.example.ebankingportal.service.JwtService;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StoreQueryParameters;
-import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.state.KeyValueStore;
-import org.apache.kafka.streams.state.QueryableStoreTypes;
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.math.BigDecimal;
 import java.util.*;
 
 @RestController

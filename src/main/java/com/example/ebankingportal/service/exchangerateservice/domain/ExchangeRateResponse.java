@@ -1,4 +1,4 @@
-package com.example.ebankingportal.services.exchangerateservice.domain;
+package com.example.ebankingportal.service.exchangerateservice.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

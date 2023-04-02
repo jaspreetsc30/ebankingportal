@@ -1,9 +1,7 @@
-package com.example.ebankingportal.configurations.kafka;
+package com.example.ebankingportal.config.kafka;
 
 
-import com.example.ebankingportal.models.transaction.Transaction;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
+import com.example.ebankingportal.model.Transaction;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.serialization.StringSerializer;

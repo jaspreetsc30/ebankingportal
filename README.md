@@ -43,11 +43,58 @@ Now that the Kafka Infrastructure has been set we can build run the Spring proje
 
 -> The application will be available at http://localhost:8080.
 
+## Implementation
+
+## Project Structure
+The source code follows the following structure 
+### Top Level Structure
+```agsl
+├───java                         
+│   └───com
+│       └───example
+│           └───ebankingportal
+│               ├───configurations
+│               │   ├───authentication
+│               │   └───kafka
+│               ├───models
+│               ├───repositories
+│               ├───services
+│               ├───util
+│               └───web
+│                   ├───authentication
+│                   │   └───domain
+│                   └───ebanking
+│                       └───domain
+└───resources
+
+```
+The top level structure of the source code is organized into 6 packages ```(configurations,models,repositories,services,web,util)```
+
+Package  | Description
+------------- | -------------
+config | Contains spring boot class annotated with @configuration
+model  | Contains DTO classes
+repository  | Repository for CRUD operations to DB
+service | Contains core business and processing logic
+web | Contains web controllers
+util | Contains basic utility functions (eg CalculatorUtil)
+
+The top level structure further contains sub-packages that are mainly grouped into three modules ```(ebanking,authentication,kafka)```
+
+
+Package  | Description
+------------- | -------------
+ebanking | Handles ebanking functionality (credit,debit,getbalances)
+authentication  | Handles Authentication functionality
+kafka  | Handles Kafka Infrastructure
+
+
 
 ## Technologies
 * Spring Boot 3.0
 * Spring Security
 * JSON Web Tokens (JWT)
+* H2 Database
 * Kafka Streams
 * Docker
 * Circle CI

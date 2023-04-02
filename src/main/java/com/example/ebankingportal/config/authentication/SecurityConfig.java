@@ -1,4 +1,4 @@
-package com.example.ebankingportal.configurations.authentication;
+package com.example.ebankingportal.config.authentication;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

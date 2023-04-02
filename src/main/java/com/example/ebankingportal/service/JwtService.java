@@ -1,4 +1,4 @@
-package com.example.ebankingportal.services;
+package com.example.ebankingportal.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

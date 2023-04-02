@@ -1,11 +1,9 @@
-package com.example.ebankingportal.configurations.authentication;
+package com.example.ebankingportal.config.authentication;
 
 
-import com.example.ebankingportal.services.JwtService;
+import com.example.ebankingportal.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

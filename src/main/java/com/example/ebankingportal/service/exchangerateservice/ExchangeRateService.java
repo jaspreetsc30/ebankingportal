@@ -1,8 +1,6 @@
-package com.example.ebankingportal.services.exchangerateservice;
+package com.example.ebankingportal.service.exchangerateservice;
 
-import com.example.ebankingportal.services.exchangerateservice.domain.ExchangeRateResponse;
-import com.fasterxml.jackson.databind.util.JSONPObject;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.ebankingportal.service.exchangerateservice.domain.ExchangeRateResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;

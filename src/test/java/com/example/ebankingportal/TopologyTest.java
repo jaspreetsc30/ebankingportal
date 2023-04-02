@@ -2,18 +2,16 @@ package com.example.ebankingportal;
 
 
 
-import com.example.ebankingportal.configurations.kafka.StreamProcessor;
-import com.example.ebankingportal.models.transaction.Transaction;
+import com.example.ebankingportal.config.kafka.StreamProcessor;
+import com.example.ebankingportal.model.Transaction;
 import org.apache.kafka.common.serialization.*;
 import org.apache.kafka.streams.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.support.serializer.JsonSerde;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;

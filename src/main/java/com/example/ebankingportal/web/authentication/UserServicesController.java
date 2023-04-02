@@ -3,7 +3,7 @@ package com.example.ebankingportal.web.authentication;
 import com.example.ebankingportal.web.authentication.domain.AuthenticationRequest;
 import com.example.ebankingportal.web.authentication.domain.AuthenticationResponse;
 import com.example.ebankingportal.web.authentication.domain.RegisterUserRequest;
-import com.example.ebankingportal.services.UserService;
+import com.example.ebankingportal.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

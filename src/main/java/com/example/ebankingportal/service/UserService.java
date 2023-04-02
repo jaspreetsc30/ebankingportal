@@ -1,11 +1,11 @@
-package com.example.ebankingportal.services;
+package com.example.ebankingportal.service;
 
 
 import com.example.ebankingportal.web.authentication.domain.AuthenticationRequest;
 import com.example.ebankingportal.web.authentication.domain.AuthenticationResponse;
 import com.example.ebankingportal.web.authentication.domain.RegisterUserRequest;
-import com.example.ebankingportal.models.User;
-import com.example.ebankingportal.repositories.UserRepository;
+import com.example.ebankingportal.model.User;
+import com.example.ebankingportal.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

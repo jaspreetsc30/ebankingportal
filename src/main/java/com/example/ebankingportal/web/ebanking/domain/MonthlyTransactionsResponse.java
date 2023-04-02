@@ -1,9 +1,8 @@
 package com.example.ebankingportal.web.ebanking.domain;
 
-import com.example.ebankingportal.models.transaction.Transaction;
+import com.example.ebankingportal.model.Transaction;
 import lombok.Data;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 

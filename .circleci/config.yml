@@ -6,6 +6,11 @@ version: 2.1
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
+  kafka-set-up:
+    docker:
+      - image: cimg/base:2023.03 
+    steps:
+      - checkout
 
     
   
@@ -16,7 +21,6 @@ jobs:
     # Be sure to update the Docker image tag below to openjdk version of your application.
     # A list of available CircleCI Docker Convenience Images are available here: https://circleci.com/developer/images/image/cimg/openjdk
     docker:
-      - image: cimg/base:2023.03 
       - image: cimg/openjdk:11.0
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
@@ -38,4 +42,5 @@ workflows:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
+      - kafka-set-up
       - build-and-test

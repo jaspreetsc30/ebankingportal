@@ -30,10 +30,10 @@ public class EBankingController {
 
 
 
-    private boolean isIBANValid(HttpHeaders headers,String iban){
+    private String getIBAN(HttpHeaders headers){
         String jwtToken = headers.getFirst(HttpHeaders.AUTHORIZATION).substring(7);
         Claims claim = jwtService.extractAllClaims(jwtToken);
-        return iban.equals(claim.get("IBAN"));
+        return  claim.get("IBAN").toString();
     }
 
 
@@ -41,35 +41,34 @@ public class EBankingController {
 
     @PostMapping("/debit")
     private CreditDebitResponse debit(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreditDebitRequest request){
-        if (!isIBANValid(headers, request.getIban())) throw new SecurityException("Invalid IBAN");
-        return eBankingService.processDebit(request);
+        String iban = getIBAN(headers);
+        return eBankingService.processDebit(request,iban);
     }
 
     @PostMapping("/credit")
     private CreditDebitResponse credit(@RequestHeader HttpHeaders headers,@Valid @RequestBody CreditDebitRequest request){
-        if (!isIBANValid(headers, request.getIban())) throw new SecurityException("Invalid IBAN");
-        return eBankingService.processCredit(request);
+        String iban = getIBAN(headers);
+        return eBankingService.processCredit(request,iban);
     }
 
-    @GetMapping("/inquire/{iban}")
+    @GetMapping("/inquire")
     private MonthlyTransactionsResponse inquire(@RequestHeader HttpHeaders headers
-            ,@PathVariable String iban
+
             ,@Range(min = 1,max = 12) @RequestParam(required = true) int month
             ,@RequestParam(required = true) int year
             ,@Range(min = 1,max = 12) @RequestParam(required = false) Integer page
-            ,@RequestParam(required = false) Integer pageSize
-            ,@RequestParam(required = false) Boolean exchangeRateFlag
+            ,@Range(min = 1,max = 100)@RequestParam(required = false) Integer pageSize
+            ,@RequestParam(required = false) Boolean isRateRequired
 
     ){
-
-        if (!isIBANValid(headers,iban)) throw new SecurityException("Invalid IBAN");
+        String iban = getIBAN(headers);
         long currYear = Calendar.getInstance().get(Calendar.YEAR);
         if (year > currYear || year < currYear - 10) throw new RuntimeException("Invalid Year");
         String key = Integer.toString(month)+ Integer.toString(year)+ "_" + iban;
         if (page == null) page = 1;
         if (pageSize == null) pageSize = 10;
-        if (exchangeRateFlag == null) exchangeRateFlag = false;
-        MonthlyTransactionsResponse response = eBankingService.getMonthlyTransactions(key,page,pageSize,exchangeRateFlag);
+        if (isRateRequired == null) isRateRequired = false;
+        MonthlyTransactionsResponse response = eBankingService.getMonthlyTransactions(key,page,pageSize,isRateRequired);
         return response;
     }
 

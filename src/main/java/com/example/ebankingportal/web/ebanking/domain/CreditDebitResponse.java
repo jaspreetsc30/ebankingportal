@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Builder
 public class CreditDebitResponse {
-    public Long time;
+    public String time;
     public String transactionId;
     private String iban;
     private Double amount;

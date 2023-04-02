@@ -37,10 +37,16 @@ public class UserService {
     public User getUser(String userName){
         return userRepository.findByUserName(userName);
     }
+    public User getUserByIban(String iban){
+        return userRepository.findByIBAN(iban);
+    }
+
 
     public AuthenticationResponse registerUser(RegisterUserRequest request){
         if (getUser(request.getUserName())!=null)
             throw new DuplicateKeyException("The username already exists");
+        if (getUserByIban(request.getIban())!=null)
+            throw new DuplicateKeyException("The specified IBAN already exists");
 
         User user = new User();
         user.setUserName(request.getUserName());

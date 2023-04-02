@@ -18,10 +18,8 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +40,12 @@ public class EBankingService {
     @Autowired
     ExchangeRateService exchangeRateService;
 
+    public static String convertTimeStamp(Long timestamp){
+        Date date=new Date(timestamp);
+        SimpleDateFormat df2 = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        String dateText = df2.format(date);
+        return dateText;
+    }
     private HashMap<String, Double> getBalance(String IBAN){
         KafkaStreams kafkaStreams = factoryBean.getKafkaStreams();
         ReadOnlyKeyValueStore<String, HashMap<String,Double>> balance = kafkaStreams.store(
@@ -57,7 +61,7 @@ public class EBankingService {
         return new Double(String.valueOf(userBalance.get(currency)));
     }
 
-    private MonthlyTransactionsResponse paginateTransactions(List<Transaction> transactions , int page, int pagesize, boolean exchangeRateFlag){
+    private MonthlyTransactionsResponse paginateTransactions(List<Transaction> transactions , int page, int pagesize, boolean isRateRequired){
         MonthlyTransactionsResponse response = new MonthlyTransactionsResponse();
         HashMap<String,Double> balances = new HashMap<>();
         int numTransactions = transactions.size();
@@ -78,10 +82,10 @@ public class EBankingService {
         System.out.println(transactions);
 
         for (Transaction transaction: response.getTransactions()) {
-             balances= CalculatorUtil.calculateBalances(balances,transaction);
+             balances= CalculatorUtil.calculateBalancesWithCreditDebit(balances,transaction);
         }
         response.setBalances(balances);
-        if (exchangeRateFlag){
+        if (isRateRequired){
             HashMap<String,String> exchangeRates =exchangeRateService.getExchangeRates(new ArrayList<>(balances.keySet()));
             response.setExchangeRates(exchangeRates);;
         }
@@ -91,21 +95,20 @@ public class EBankingService {
 
     }
 
-    private CreditDebitResponse generateCreditDebitResponse(CreditDebitRequest request, String transactionId, Long timestamp, TransactionType transactionType){
+    private CreditDebitResponse generateCreditDebitResponse(CreditDebitRequest request, String transactionId, Long timestamp, TransactionType transactionType,String IBAN){
         return CreditDebitResponse.builder()
-                .iban(request.getIban())
+                .iban(IBAN)
                 .amount(request.getAmount())
                 .currency(request.getCurrency())
                 .message(request.getMessage())
                 .transactionId(transactionId)
-                .time(timestamp)
+                .time(convertTimeStamp(timestamp))
                 .transactionType(transactionType)
                 .build();
     }
 
-    public CreditDebitResponse processDebit(CreditDebitRequest request){
+    public CreditDebitResponse processDebit(CreditDebitRequest request,String IBAN){
         String transactionId = UUID.randomUUID().toString();
-        String IBAN = request.getIban();
         Long timestamp = System.currentTimeMillis();
         Transaction transaction = Transaction.builder()
                 .transactionId(transactionId)
@@ -116,11 +119,10 @@ public class EBankingService {
                 .message(request.getMessage())
                 .build();
         kafkaTemplate.send(topic,IBAN,transaction);
-        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT);
+        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT,IBAN);
     }
 
-    public CreditDebitResponse processCredit(CreditDebitRequest request){
-        String IBAN = request.getIban();
+    public CreditDebitResponse processCredit(CreditDebitRequest request, String IBAN){
         String currency = String.valueOf(request.getCurrency());
         Double amount = request.getAmount();
         Long timestamp = System.currentTimeMillis();
@@ -135,16 +137,16 @@ public class EBankingService {
                 .message(request.getMessage())
                 .build();
         kafkaTemplate.send(topic,IBAN,transaction);
-        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT);
+        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT,IBAN);
 
     }
 
-    public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize, boolean exchangeRateFlag){
+    public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize, boolean isRateRequired){
         KafkaStreams kafkaStreams = factoryBean.getKafkaStreams();
         ReadOnlyKeyValueStore<String, List<Transaction>> transactions = kafkaStreams.store(
                 StoreQueryParameters.fromNameAndType(transactionsStoreName, QueryableStoreTypes.keyValueStore())
         );
-            return paginateTransactions(transactions.get(key),page,pageSize,exchangeRateFlag);
+            return paginateTransactions(transactions.get(key),page,pageSize,isRateRequired);
     }
 
 

@@ -2,5 +2,7 @@ package com.example.ebankingportal.web.ebanking.domain;
 
 public enum Currency {
     HKD,
-    USD
+    USD,
+    SGD,
+    CHF
 }

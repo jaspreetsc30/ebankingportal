@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonSerde;
 
 import java.math.BigDecimal;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class StreamProcessor {
 
                         Materialized.<String, HashMap<String,Double>, KeyValueStore<Bytes, byte[]>>as(balancesstorename)
                                 .withValueSerde(balanceSerde)).toStream()
-                .mapValues( values -> values.toString()).to(balancesOutputTopic, Produced.with(Serdes.String(), Serdes.String()));
+                .mapValues(AbstractMap::toString).to(balancesOutputTopic, Produced.with(Serdes.String(), Serdes.String()));
 
 
 

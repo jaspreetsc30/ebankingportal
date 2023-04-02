@@ -10,8 +10,7 @@ import java.math.BigDecimal;
 
 @Data
 public class CreditDebitRequest {
-    @NotBlank
-    private String iban;
+
     @DecimalMin("0.01")
     @DecimalMax("100000")
     private Double amount;

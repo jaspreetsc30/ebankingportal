@@ -42,6 +42,164 @@ Now that the Kafka Infrastructure has been set we can build run the Spring proje
 * Run the project: ```mvn spring-boot:run```
 
 -> The application will be available at http://localhost:8080.
+## API Guide
+Information on all restful API operations in this project can be accessed via http://localhost:8080/swagger-ui/index.html
+![Swagger-UI](/diagram/Swagger-UI.PNG)
+
+## /api/v1/auth
+This endpoint does not require authentication as it is for authentication and registration
+
+**GET** **/api/v1/auth/register**
+
+**Description**: An endpoint to register users and provide a JWT token upon successful registration
+
+**Request Body**
+
+| Field    | Data Type | Description                                         |Required|
+|----------|-----------|-----------------------------------------------------|---|
+| iban     | String    | unique IBAN of every user                           |Y|
+| userName | String    | username to register with                           |Y|
+| password | String    | password to register with  |Y|
+
+**Response**
+
+| Field    | Data Type | Description                                         |
+|----------|-----------|-----------------------------------------------------|
+| token     | String    | jwt Token                           |
+
+
+**GET** **/api/v1/auth/authentication**
+
+Description: An endpoint to authenticate users and provide a JWT token upon successful authentication
+
+**Request Body**
+
+| Field    | Data Type | Description                                         | Required|
+|----------|-----------|-----------------------------------------------------|---------|
+| iban     | String    | unique IBAN of every user                           | Y|
+| userName | String    | username to register with                           |Y|
+| password | String    | password to register with  |Y|
+
+**Response**
+
+| Field    | Data Type | Description                                         |
+|----------|-----------|-----------------------------------------------------|
+| token     | String    | jwt Token                           |
+
+
+## /api/v1/banking
+
+**POST** **/api/v1/banking/debit**
+
+**POST** **/api/v1/banking/credit**
+
+
+Description: An endpoint to post debit/credit transactions.The two endpoints have the same request and response body.
+
+**Request Body**
+
+| Field    | Data Type | Description                                                                    | Required |
+|----------|-----------|--------------------------------------------------------------------------------|----------|
+| currency | String    | currency                                                                       |Y |
+| amount   | Double    | amount to register </br> The amount cannot exceed 100,000 and 2 decimal places |Y|
+| message  | String    | Transaction Message       (Optional)                                           |N(Nullable)|
+
+**Response**
+
+| Field             | Data Type | Description                                           |
+|-------------------|-----------|-------------------------------------------------------|
+| iban              | String    | Unique IBAN of user                                   |
+| transactionId     | String    | ID of the transaction                                 |
+| currency          | String    | Currency the transaction was processed in             |
+| amount            | Double    | Amount                                                |
+| time              | String    | Time of the transaction in DD:MM:YY HH:MM:SS format   |
+| transactionId     | String    | ID of the transaction                                 |
+| message           | String    | Message of the transaction                            |
+| transactionType   | String    | ENUM of either credit or debit but returned as String |
+
+
+
+**GET** **/api/v1/auth/inquire**
+
+**Query Params**
+
+| Query Param     | Data Type | Description                                                                   |Required|
+|-----------------|-----------|-------------------------------------------------------------------------------|-----|
+| month           | Integer   | Month of transaction to inquire                                               |Y|
+| year            | Integer   | Year of transaction to inquire                                                |Y|
+| page            | Integer   | which page to inquire  , range from 1-100, default 1                          |N
+| pageSize        | Integer   | size of page  range from 1-100, default 5                                     |N
+| isRateRequired  | Boolean   | flag for calling exchange rate service</br> (to limit API calls due to limits) |N|
+
+**Sample Response**
+
+The Response is nested as is better illustrated via a sample response.
+
+```agsl
+{
+    "balances": {
+        "HKD": 620.0,
+        "HKDdebit": 620.0
+    },
+    "exchangeRates": null,
+    "transactions": [
+        {
+            "transactionId": "8eeee9fa-bb6d-4ae1-b6b1-fe0fed6c52db",
+            "amount": 124.0,
+            "currency": "HKD",
+            "timestamp": 1680278823100,
+            "message": null,
+            "iban": "checkingonthis"
+        },
+        {
+            "transactionId": "2d58be07-eebe-4683-ab69-083cb587dcc3",
+            "amount": 124.0,
+            "currency": "HKD",
+            "timestamp": 1680278956323,
+            "message": null,
+            "iban": "checkingonthis"
+        },
+        {
+            "transactionId": "5e8cefb5-df1e-4145-8c08-9d2c7f329ae0",
+            "amount": 124.0,
+            "currency": "HKD",
+            "timestamp": 1680279017197,
+            "message": null,
+            "iban": "checkingonthis"
+        },
+        {
+            "transactionId": "6fb0430a-e378-4a67-949e-a50b7879dad6",
+            "amount": 124.0,
+            "currency": "HKD",
+            "timestamp": 1680284814625,
+            "message": null,
+            "iban": "checkingonthis"
+        },
+        {
+            "transactionId": "a775aacd-b2db-4935-ab68-3a89341ea803",
+            "amount": 124.0,
+            "currency": "HKD",
+            "timestamp": 1680340905562,
+            "message": null,
+            "iban": "checkingonthis"
+        }
+    ],
+    "message": null
+}
+```
+
+Description: An endpoint to post debit/credit transactions.The two endpoints have the same request and response body.
+
+**Query Params**
+
+| Field    | Data Type | Description                                                                    | Required |
+|----------|-----------|--------------------------------------------------------------------------------|----------|
+| currency | String    | currency                                                                       |Y |
+| amount   | Double    | amount to register </br> The amount cannot exceed 100,000 and 2 decimal places |Y|
+| message  | String    | Transaction Message       (Optional)                                           |N(Nullable)|
+
+**Response**
+
 
 ## Project Structure
 The source code follows the following structure 
@@ -68,23 +226,23 @@ The source code follows the following structure
 ```
 The top level structure of the source code is organized into 6 packages ```(configurations,models,repositories,services,web,util)```
 
-Package  | Description
-------------- | -------------
-config | Contains spring boot class annotated with @configuration
-model  | Contains DTO classes
-repository  | Repository for CRUD operations to DB
-service | Contains core business and processing logic
-web | Contains web controllers
-util | Contains basic utility functions (eg CalculatorUtil)
+Package  | Description|
+------------- | -------------|
+config | Contains spring boot class annotated with @configuration|
+model  | Contains DTO classes|
+repository  | Repository for CRUD operations to DB|
+service | Contains core business and processing logic|
+web | Contains web controllers|
+util | Contains basic utility functions (eg CalculatorUtil)|
 
 The top level structure further contains sub-packages that are mainly grouped into three modules ```(ebanking,authentication,kafka)```
 
 
-Package  | Description
-------------- | -------------
-ebanking | Handles ebanking functionality (credit,debit,getbalances)
-authentication  | Handles Authentication functionality
-kafka  | Handles Kafka Infrastructure
+Package  | Description|
+------------- | -------------|
+ebanking | Handles ebanking functionality (credit,debit,getbalances)|
+authentication  | Handles Authentication functionality|
+kafka  | Handles Kafka Infrastructure|
 
 ## Implementation
 ## Authentication

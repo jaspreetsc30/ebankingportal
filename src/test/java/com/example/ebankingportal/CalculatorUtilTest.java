@@ -42,14 +42,16 @@ public class CalculatorUtilTest {
         transactions.add(
                 Transaction.builder().amount(-30.4).currency("HKD").build());
         transactions.add(
-                Transaction.builder().amount(35.99).currency("USD").build());
+                Transaction.builder().amount(99.99).currency("USD").build());
         transactions.add(
-                Transaction.builder().amount(-30.33).currency("USD").build());
+                Transaction.builder().amount(-33.33).currency("USD").build());
+        transactions.add(
+                Transaction.builder().amount(-33.33).currency("USD").build());
         for (Transaction t: transactions) balance = CalculatorUtil.calculateBalancesWithCreditDebit(balance,t);
         assertThat(balance.size()).isEqualTo(6);
         assertThat(balance.get("HKD")).isEqualTo(70.0);
-        assertThat(balance.get("USD")).isEqualTo(5.66);
-        assertThat(balance.get("HKDdebit")).isEqualTo(100.4);
+        assertThat(balance.get("USD")).isEqualTo(33.33);
+        assertThat(balance.get("USDcredit")).isEqualTo(66.66);
 
 
     }

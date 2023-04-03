@@ -56,7 +56,7 @@ public class EBankingController {
 
             ,@Range(min = 1,max = 12) @RequestParam(required = true) int month
             ,@RequestParam(required = true) int year
-            ,@Range(min = 1,max = 12) @RequestParam(required = false) Integer page
+            ,@Range(min = 1,max = 100) @RequestParam(required = false) Integer page
             ,@Range(min = 1,max = 100)@RequestParam(required = false) Integer pageSize
             ,@RequestParam(required = false) Boolean isRateRequired
 

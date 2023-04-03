@@ -10,7 +10,7 @@ To run this project locally , you will need to have the following installed on y
 * Docker Desktop
 * IntelliJ (Optional)
 
-[IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/download/#section=windows) is optional to install but highly recommended due to its extension of JDK,Maven bundle plug ins
+[IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/download/#section=windows) is optional to install but highly recommended.
 
 ### 1. Spinning up Docker container
 Kafka is required to run this project, therefore official docker images of kafka zookeeper and topics are specified in the [docker-compose.yaml](docker-compose.yaml) file of the repository.
@@ -47,7 +47,7 @@ Information on all restful API operations in this project can be accessed via ht
 ![Swagger-UI](/diagram/Swagger-UI.PNG)
 
 ## /api/v1/auth
-This endpoint does not require authentication as it is for authentication and registration
+This endpoint is whitelisted and does not require a jwt token as it is for authentication and registration
 
 **GET** **/api/v1/auth/register**
 
@@ -133,7 +133,7 @@ Description: An endpoint to post debit/credit transactions.The two endpoints hav
 
 **Sample Response**
 
-The Response is nested as is better illustrated via a sample response.
+The Response is nested and is better illustrated via a sample response.
 
 ```agsl
 {
@@ -141,7 +141,10 @@ The Response is nested as is better illustrated via a sample response.
         "HKD": 620.0,
         "HKDdebit": 620.0
     },
-    "exchangeRates": null,
+    "exchangeRates": {
+         "HKD": 7.8732,
+
+    },
     "transactions": [
         {
             "transactionId": "8eeee9fa-bb6d-4ae1-b6b1-fe0fed6c52db",
@@ -187,18 +190,6 @@ The Response is nested as is better illustrated via a sample response.
     "message": null
 }
 ```
-
-Description: An endpoint to post debit/credit transactions.The two endpoints have the same request and response body.
-
-**Query Params**
-
-| Field    | Data Type | Description                                                                    | Required |
-|----------|-----------|--------------------------------------------------------------------------------|----------|
-| currency | String    | currency                                                                       |Y |
-| amount   | Double    | amount to register </br> The amount cannot exceed 100,000 and 2 decimal places |Y|
-| message  | String    | Transaction Message       (Optional)                                           |N(Nullable)|
-
-**Response**
 
 
 ## Project Structure

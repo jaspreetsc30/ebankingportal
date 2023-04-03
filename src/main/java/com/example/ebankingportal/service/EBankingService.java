@@ -137,7 +137,7 @@ public class EBankingService {
                 .message(request.getMessage())
                 .build();
         kafkaTemplate.send(topic,IBAN,transaction);
-        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.DEBIT,IBAN);
+        return generateCreditDebitResponse(request,transactionId, timestamp,TransactionType.CREDIT,IBAN);
 
     }
 

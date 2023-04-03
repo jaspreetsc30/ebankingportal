@@ -6,6 +6,12 @@ import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitResponse;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
 import io.jsonwebtoken.Claims;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,26 +45,31 @@ public class EBankingController {
 
 
 
+    @Operation(summary = "Debits money into account")
+
     @PostMapping("/debit")
     private CreditDebitResponse debit(@RequestHeader HttpHeaders headers, @Valid @RequestBody CreditDebitRequest request){
         String iban = getIBAN(headers);
         return eBankingService.processDebit(request,iban);
     }
 
+    @Operation(summary = "Credits money into account")
     @PostMapping("/credit")
     private CreditDebitResponse credit(@RequestHeader HttpHeaders headers,@Valid @RequestBody CreditDebitRequest request){
         String iban = getIBAN(headers);
         return eBankingService.processCredit(request,iban);
     }
 
+    @Operation(summary = "Gets a list of paginated transactions in a particular month,year")
     @GetMapping("/inquire")
+
     private MonthlyTransactionsResponse inquire(@RequestHeader HttpHeaders headers
 
-            ,@Range(min = 1,max = 12) @RequestParam(required = true) int month
-            ,@RequestParam(required = true) int year
-            ,@Range(min = 1,max = 100) @RequestParam(required = false) Integer page
-            ,@Range(min = 1,max = 100)@RequestParam(required = false) Integer pageSize
-            ,@RequestParam(required = false) Boolean isRateRequired
+            ,@Parameter(description = "month" , example = "1") @Range(min = 1,max = 12) @RequestParam(required = true) int month
+            ,@Parameter(description = "year" , example = "2023")@RequestParam(required = true) int year
+            ,@Parameter(description = "page of the transaction list (contains values from (pagesize*page - page) to pagesize*page )" , example = "1") @RequestParam(required = false) Integer page
+            ,@Parameter(description = "size of each page" , example = "5") @Range(min = 1,max = 100)@RequestParam(required = false) Integer pageSize
+            ,@Parameter(description = "boolean Flag for getting exchange rates" , example = "False")@RequestParam(required = false) Boolean isRateRequired
 
     ){
         String iban = getIBAN(headers);

@@ -18,13 +18,13 @@ public class UserServicesController {
     @Autowired
     private final UserService userService;
 
-    @PostMapping("/register")
+    @PostMapping("/registration")
     @Operation(summary = "registers as a user to the ebanking portal")
     public AuthenticationResponse register(@Valid @RequestBody RegisterUserRequest request){
         return userService.registerUser(request);
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping("/login")
     @Operation(summary = "authenticate  to the ebanking portal and get a jwt token")
     public AuthenticationResponse authenticate(@Valid @RequestBody AuthenticationRequest request){
         return userService.authenticate(request);

@@ -49,7 +49,7 @@ Information on all restful API operations in this project can be accessed via ht
 ## /api/v1/auth
 This endpoint is whitelisted and does not require a jwt token as it is for authentication and registration
 
-**GET** **/api/v1/auth/register**
+**GET** **/api/v1/auth/registration**
 
 **Description**: An endpoint to register users and provide a JWT token upon successful registration
 
@@ -68,7 +68,7 @@ This endpoint is whitelisted and does not require a jwt token as it is for authe
 | token     | String    | jwt Token                           |
 
 
-**GET** **/api/v1/auth/authentication**
+**GET** **/api/v1/auth/login**
 
 Description: An endpoint to authenticate users and provide a JWT token upon successful authentication
 
@@ -119,7 +119,7 @@ Description: An endpoint to post debit/credit transactions.The two endpoints hav
 
 
 
-**GET** **/api/v1/auth/inquire**
+**GET** **/api/v1/banking/transactions**
 
 **Query Params**
 

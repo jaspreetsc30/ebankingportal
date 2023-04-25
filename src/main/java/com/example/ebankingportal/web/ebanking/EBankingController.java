@@ -61,7 +61,7 @@ public class EBankingController {
     }
 
     @Operation(summary = "Gets a list of paginated transactions in a particular month,year")
-    @GetMapping("/inquire")
+    @GetMapping("/transactions")
 
     private MonthlyTransactionsResponse inquire(@RequestHeader HttpHeaders headers
 

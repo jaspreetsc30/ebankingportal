@@ -79,7 +79,6 @@ public class EBankingService {
             transactions = numTransactions < pagesize * page?transactions.subList(fromIndex,-1):transactions.subList(fromIndex,pagesize * page);
         }
         response.setTransactions(transactions);
-        System.out.println(transactions);
 
         for (Transaction transaction: response.getTransactions()) {
              balances= CalculatorUtil.calculateBalancesWithCreditDebit(balances,transaction);
@@ -143,10 +142,18 @@ public class EBankingService {
 
     public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize, boolean isRateRequired){
         KafkaStreams kafkaStreams = factoryBean.getKafkaStreams();
-        ReadOnlyKeyValueStore<String, List<Transaction>> transactions = kafkaStreams.store(
+        ReadOnlyKeyValueStore<String, List<Transaction>> transactionStateStore = kafkaStreams.store(
                 StoreQueryParameters.fromNameAndType(transactionsStoreName, QueryableStoreTypes.keyValueStore())
         );
-            return paginateTransactions(transactions.get(key),page,pageSize,isRateRequired);
+        List<Transaction> transactions = transactionStateStore.get(key);
+            return (transactions!=null && transactions.size()> 0)?
+                    paginateTransactions(transactions,page,pageSize,isRateRequired):
+                    MonthlyTransactionsResponse.builder()
+                            .balances(null)
+                            .exchangeRates(null)
+                            .transactions(null)
+                            .message("No transactions in the specified month")
+                            .build();
     }
 
 

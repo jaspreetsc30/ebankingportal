@@ -123,13 +123,14 @@ Description: An endpoint to post debit/credit transactions.The two endpoints hav
 
 **Query Params**
 
-| Query Param     | Data Type | Description                                                                   |Required|
-|-----------------|-----------|-------------------------------------------------------------------------------|-----|
-| month           | Integer   | Month of transaction to inquire                                               |Y|
-| year            | Integer   | Year of transaction to inquire                                                |Y|
-| page            | Integer   | which page to inquire  , range from 1-100, default 1                          |N
-| pageSize        | Integer   | size of page  range from 1-100, default 5                                     |N
-| isRateRequired  | Boolean   | flag for calling exchange rate service</br> (to limit API calls due to limits) |N|
+| Query Param    | Data Type | Description                                                                    |Required|
+|----------------|-----------|--------------------------------------------------------------------------------|-----|
+| month          | Integer   | Month of transaction to inquire                                                |Y|
+| year           | Integer   | Year of transaction to inquire                                                 |Y|
+| page           | Integer   | which page to inquire  , range from 1-100, default 1                           |N
+| pageSize       | Integer   | size of page  range from 1-100, default 5                                      |N
+| isRateRequired | Boolean   | flag for calling exchange rate service</br> (to limit API calls due to limits) |N|
+| sort           | ENUM      | flag for sorting transactions in ASC/DESC order                                |N|
 
 **Sample Response**
 

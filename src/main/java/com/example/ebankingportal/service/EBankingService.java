@@ -3,10 +3,7 @@ package com.example.ebankingportal.service;
 import com.example.ebankingportal.model.Transaction;
 import com.example.ebankingportal.service.exchangerateservice.ExchangeRateService;
 import com.example.ebankingportal.util.CalculatorUtil;
-import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
-import com.example.ebankingportal.web.ebanking.domain.CreditDebitResponse;
-import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
-import com.example.ebankingportal.web.ebanking.domain.TransactionType;
+import com.example.ebankingportal.web.ebanking.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StoreQueryParameters;
@@ -140,12 +137,13 @@ public class EBankingService {
 
     }
 
-    public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize, boolean isRateRequired){
+    public MonthlyTransactionsResponse getMonthlyTransactions(String key, int page, int pageSize, boolean isRateRequired, SortEnum sort){
         KafkaStreams kafkaStreams = factoryBean.getKafkaStreams();
         ReadOnlyKeyValueStore<String, List<Transaction>> transactionStateStore = kafkaStreams.store(
                 StoreQueryParameters.fromNameAndType(transactionsStoreName, QueryableStoreTypes.keyValueStore())
         );
         List<Transaction> transactions = transactionStateStore.get(key);
+        if (transactions!=null && transactions.size()> 0 && sort==SortEnum.DESC) Collections.reverse(transactions);
             return (transactions!=null && transactions.size()> 0)?
                     paginateTransactions(transactions,page,pageSize,isRateRequired):
                     MonthlyTransactionsResponse.builder()

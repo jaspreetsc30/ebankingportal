@@ -5,13 +5,10 @@ import com.example.ebankingportal.service.JwtService;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitRequest;
 import com.example.ebankingportal.web.ebanking.domain.CreditDebitResponse;
 import com.example.ebankingportal.web.ebanking.domain.MonthlyTransactionsResponse;
+import com.example.ebankingportal.web.ebanking.domain.SortEnum;
 import io.jsonwebtoken.Claims;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.headers.Header;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,7 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @RestController
@@ -69,6 +67,7 @@ public class EBankingController {
             ,@Parameter(description = "year" , example = "2023")@RequestParam(required = true) int year
             ,@Parameter(description = "page of the transaction list (contains values from (pagesize*page - page) to pagesize*page )" , example = "1") @RequestParam(required = false) Integer page
             ,@Parameter(description = "size of each page" , example = "5") @Range(min = 1,max = 100)@RequestParam(required = false) Integer pageSize
+            ,@Parameter(description = "Order Transactions By Ascending/Descending" , example = "ASC") @NotNull @RequestParam(required = false) SortEnum sort
             ,@Parameter(description = "boolean Flag for getting exchange rates" , example = "False")@RequestParam(required = false) Boolean isRateRequired
 
     ){
@@ -79,7 +78,7 @@ public class EBankingController {
         if (page == null) page = 1;
         if (pageSize == null) pageSize = 10;
         if (isRateRequired == null) isRateRequired = false;
-        MonthlyTransactionsResponse response = eBankingService.getMonthlyTransactions(key,page,pageSize,isRateRequired);
+        MonthlyTransactionsResponse response = eBankingService.getMonthlyTransactions(key,page,pageSize,isRateRequired,sort);
         return response;
     }
 

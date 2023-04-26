@@ -86,7 +86,7 @@ public class StreamProcessor {
     public static String getMonthAndYear(Long timestamp){
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(timestamp);
-        return Integer.toString(cal.get(Calendar.MONTH) + 1) + Integer.toString(cal.get(Calendar.YEAR))  ;
+        return Integer.toString(cal.get(Calendar.MONTH) + 1) + cal.get(Calendar.YEAR);
     }
     public HashMap<String, Double> calculateBalances(HashMap<String, Double> balances, Transaction value){
         String currency = value.getCurrency();

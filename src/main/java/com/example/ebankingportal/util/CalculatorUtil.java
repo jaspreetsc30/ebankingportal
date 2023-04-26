@@ -36,7 +36,6 @@ public class CalculatorUtil {
                 balances.put(currency+"credit",credit.doubleValue());
         }
         else{
-
                 BigDecimal debit = new BigDecimal(String.valueOf(balances.get(currency+"debit"))).add(new BigDecimal(String.valueOf(amount))) ;
                 balances.put(currency+"debit",debit.doubleValue());
 

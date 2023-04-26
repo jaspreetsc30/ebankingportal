@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,10 +59,11 @@ public class EBankingService {
         return new Double(String.valueOf(userBalance.get(currency)));
     }
 
-    private MonthlyTransactionsResponse paginateTransactions(List<Transaction> transactions , int page, int pagesize, boolean isRateRequired){
+    private MonthlyTransactionsResponse paginateTransactions(List<Transaction> transactions , int page, int pagesize, boolean isRateRequired , SortEnum sort){
         MonthlyTransactionsResponse response = new MonthlyTransactionsResponse();
         HashMap<String,Double> balances = new HashMap<>();
-        int numTransactions = transactions.size();
+        int numTransactions = (transactions == null )? 0:transactions.size();
+        if (numTransactions>0 && sort==SortEnum.DESC) Collections.reverse(transactions);
         if (numTransactions == 0 || numTransactions < pagesize * page - pagesize){
             response.setTransactions(transactions);
             response.setBalances(balances);
@@ -80,7 +82,18 @@ public class EBankingService {
         for (Transaction transaction: response.getTransactions()) {
              balances= CalculatorUtil.calculateBalancesWithCreditDebit(balances,transaction);
         }
-        response.setBalances(balances);
+        Map<String,Double> credits = balances.entrySet()
+                .stream().filter(x->x.getKey().endsWith("credit"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String,Double> debits = balances.entrySet()
+                .stream().filter(x->x.getKey().endsWith("debit"))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map balance = balances.entrySet()
+                .stream().filter(x->!(x.getKey().endsWith("credit") || x.getKey().endsWith("debit")))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        response.setBalances(balance);
+        response.setDebits(debits);
+        response.setCredits(credits);
         if (isRateRequired){
             HashMap<String,String> exchangeRates =exchangeRateService.getExchangeRates(new ArrayList<>(balances.keySet()));
             response.setExchangeRates(exchangeRates);;
@@ -143,15 +156,7 @@ public class EBankingService {
                 StoreQueryParameters.fromNameAndType(transactionsStoreName, QueryableStoreTypes.keyValueStore())
         );
         List<Transaction> transactions = transactionStateStore.get(key);
-        if (transactions!=null && transactions.size()> 0 && sort==SortEnum.DESC) Collections.reverse(transactions);
-            return (transactions!=null && transactions.size()> 0)?
-                    paginateTransactions(transactions,page,pageSize,isRateRequired):
-                    MonthlyTransactionsResponse.builder()
-                            .balances(null)
-                            .exchangeRates(null)
-                            .transactions(null)
-                            .message("No transactions in the specified month")
-                            .build();
+            return paginateTransactions(transactions,page,pageSize,isRateRequired,sort);
     }
 
 
